@@ -39,8 +39,8 @@ a failed post weren't specific enough, individual validation tests and errors co
 concise communication. 
 
 This approach does also have its drawbacks due to the simple nature of the implementation. The primary case that I foresee this potentially causing 
-issues for the client is the case where a special character is needed for a valid field. For example, if a user were to provide the [Example Json] as 
-the body for a post /books/new request, their request would fail even though the book in question is perfectly valid. 
+issues for the client is the case where a special character is needed for a valid field. For example, if a user were to provide the [Example Json] 
+below as the body for a post /books/new request, their request would fail even though the book in question is perfectly valid. 
 
 [Example Json]
 {
@@ -56,7 +56,40 @@ validators for each user provided field, each with their own perks and drawbacks
 
 *I think this is the correct error code to throw in this instance as the request is understood, but due to containing forbidden characters, it is
 unprocessable. Not 100% on that one but I went for what I felt was most appropriate in this instance.
+
 ************************************************************************************************************************************************************
                                                                 Security Review
 ************************************************************************************************************************************************************
+
+Revisions to the current iteration of the bookstore API would improve the overall security for both users and the bookstore themselves. Potential security
+revisions will be catagorized as confidentiality, integrity, or accessibility concerns and will have a brief overview of the issue, its level of impact, 
+and potential action moving forward.
+
+-----Confidentiality-----
+
+As of right now there is no protection in place for the confidentiality of customers names and addresses as they sit on the database entirely exposed. 
+Impact Level: 8
+Leaving the customer's data exposed could lead to personal information contained within the database. To mitigate this, I propose encrypting the customer 
+table in the database while it's not in use, only to be decryted to provide the needed information upon proper authentication and immediately encrypted again.
+
+-----Integrity-----
+
+Currently, there are no data integrity checks present within the system.
+Impact Level: 5
+As most of the data contained within this database is not sensitive in nature, data integrity has a lesser impact, however as this is a business API it is 
+important to ensure that any possible transaction data is correct. To do so, I propose that a system be implemented that checks for data integrity any time 
+data that could be relevant to purchases is accessed or modified. Individual fields within the database can be paired with a corresponding MAC that can be 
+checked at access time and updated when the field is modified in the database to ensure the data's integrity.
+
+Additionally, there is no logging system present within the system.
+Impact Level: 7
+A logging system that details usage information would be beneficial in verifying that the data contained within the database is correct. I propose that a 
+system be implemented that prints the time and pertinent usage details of all API calls to a log file stored on the server.
+
+-----Accessibility-----
+
+The current iteration of input validation presents accessibility issues.
+Impact Level: 4
+Proposed changes to the input validation system are outlined in the "Changes Made" section above.
+
 
