@@ -6,7 +6,7 @@ export const createBook = async (req: Request, res: Response) => {
     const { title, author, price } = req.body;
     if(validate(price) == false || validate(author) == false || validate(price) == false)
     {
-        res.status(422).json({ 'status': 'failed: contains forbidden characters.'})
+        res.status(422).json({ 'status': 'failed: contains forbidden characters.'});
     }
     else
     {
@@ -18,7 +18,14 @@ export const createBook = async (req: Request, res: Response) => {
 
 export const getPrice = async (req: Request, res: Response) => {
     const { title, author } = req.body;
-    const bid = await db.getBookId(title, author);
-    const price = await db.getBookPrice(bid);
-    res.status(200).json({ price });
+    if(validate(title) == false || validate(author) == false)
+    {
+        res.status(422).json({ 'status': 'failed: contains forbidden characters.'});
+    }
+    else
+    {
+        const bid = await db.getBookId(title, author);
+        const price = await db.getBookPrice(bid);
+        res.status(200).json({ price });
+    }
 }

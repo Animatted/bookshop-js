@@ -4,9 +4,9 @@ import { validate } from './validator';
 
 export const createCustomer = async (req: Request, res: Response) => {
     const { name, shippingAddress } = req.body;
-    if(validate(name) == false||validate(shippingAddress))
+    if(validate(name) == false||validate(shippingAddress) == false)
     {
-        res.status(422).json({ 'status': 'failed: contains forbidden characters.'})
+        res.status(422).json({ 'status': 'failed: contains forbidden characters.'});
     }
     else
     {
@@ -17,12 +17,26 @@ export const createCustomer = async (req: Request, res: Response) => {
 
 export const updateCustomerAddress = async (req: Request, res: Response) => {
     const { cid, address } = req.body;
-    await db.updateCustomerAddress(cid, address);
-    res.status(200).json({ 'status': 'success' });
+    if(validate(cid) == false || validate(address) == false)
+    {
+        res.status(422).json({ 'status': 'failed: contains forbidden characters.'});
+    }
+    else
+    {
+        await db.updateCustomerAddress(cid, address);
+        res.status(200).json({ 'status': 'success' });
+    }
 }
 
 export const getCustomerBalance = async (req: Request, res: Response) => {
     const { cid } = req.body;
-    const balance = await db.customerBalance(cid);
-    res.status(200).json({ balance });
+    if(validate(cid) == false)
+    {
+        res.status(422).json({ 'status': 'failed: contains forbidden characters.'});
+    }
+    else
+    {
+        const balance = await db.customerBalance(cid);
+        res.status(200).json({ balance });
+    }
 }
