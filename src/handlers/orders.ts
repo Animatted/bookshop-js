@@ -1,12 +1,20 @@
 import { Request, Response } from "express";
 import * as db from "../db";
+import { validate } from "./validator";
 
 export const createOrder = async (req: Request, res: Response) => {
     const { title, author, name, shippingAddress } = req.body;
-    const bid = await db.getBookId(title, author);
-    const cid = await db.getCustomerId(name, shippingAddress);
-    await db.createPurchaseOrder(bid, cid);
-    res.status(201).json({ 'status': 'success' });
+    if(validate(title) == false || validate(author) == false || validate(name) == false || validate(shippingAddress) == false)
+    {
+        res.status(422).json({'status': 'failed: contains forbidden characters.'})
+    }
+    else
+    {
+        const bid = await db.getBookId(title, author);
+        const cid = await db.getCustomerId(name, shippingAddress);
+        await db.createPurchaseOrder(bid, cid);
+        res.status(201).json({ 'status': 'success' });
+    }
 }
 
 export const getShipmentStatus = async (req: Request, res: Response) => {
